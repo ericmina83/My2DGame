@@ -4,27 +4,36 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    public bool attacking = false;
+    private Damage damage = null;
+    public Character owner;
 
-    public Damage damage = new Damage();
-
-    private int characterLayer;
-
-    // Start is called before the first frame update
-    void Awake()
+    public void SetDamage(Damage damage)
     {
-        characterLayer = LayerMask.NameToLayer("Character");
-
-        damage.damageAmount = 30;
+        this.damage = damage;
     }
 
+    // Start is called before the first frame update
     void OnTriggerStay2D(Collider2D other)
     {
-        if (attacking)
-            if (other.gameObject.layer == characterLayer)
-            {
-                other.GetComponent<Character>().GetHit(damage);
-                attacking = false;
-            }
+        if (damage == null)
+            return;
+
+        if (!damage.enable)
+            return;
+
+        var body = other.GetComponent<Body>();
+
+        if (body == null) // if there is no body, return
+            return;
+
+        Character enemy = body.GetOwner();
+
+        if (enemy == owner)
+            return;
+
+        if (enemy.team == owner.team)
+            return;
+
+        damage.HandleDamage(enemy);
     }
 }

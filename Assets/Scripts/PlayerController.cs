@@ -15,143 +15,245 @@ public class PlayerController : Character
     InputAction actionMove;
     InputAction actionRun;
     InputAction actionJump;
-    InputAction actionDefend;
+    InputAction actionBlock;
     InputAction actionAttack;
     InputAction actionDodge;
+    TriggerHandler triggerHandler;
+    public GameObject obstacle;
 
-    [SerializeField] private Weapon weapon; // weapon's gameobject
+    [SerializeField] private List<Weapon> weapon; // weapon's gameobject
     [SerializeField] private float jumpForce = 7.0f; // decide how height when jumping
-    [SerializeField] private LayerMask groundMask; // 
-    [SerializeField] private float runningSpeed = 4.0f; // how running fast
+    [SerializeField] private float blockingDuration = 0.2f;
+    public MagicCircle jumpCircle;
+    public Transform weaponPoint;
 
     // Start is called before the first frame update
-    void Start()
+    override protected void Init()
     {
         playerInput = GetComponent<PlayerInput>();
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
 
+        triggerHandler = new TriggerHandler(animator);
+
         actionMove = playerInput.actions["Move"];
         actionRun = playerInput.actions["Run"];
         actionJump = playerInput.actions["Jump"];
-        actionDefend = playerInput.actions["Defend"];
+        actionBlock = playerInput.actions["Defend"];
         actionAttack = playerInput.actions["Attack"];
         actionDodge = playerInput.actions["Dodge"];
     }
 
     Vector2 input;
     float speedX;
-    float speedY;
-    bool isGround;
 
     bool canDoNext = false;
     bool shootTriggerEnable = false;
     bool shootTriggerOn = false;
     bool doubleJump = true;
+    public bool blocking = false;
+    public bool awaking = false;
+    float blockingTime = 0.0f;
+    float hitForce;
+    bool unstopable = false;
+    bool canJump = false;
 
-    void FixedUpdate()
+    protected override Damage OnHitted(Damage damage)
     {
-        CheckIsGround();
+        var currentState = animator.GetCurrentAnimatorStateInfo(0);
+        var currentTransition = animator.GetAnimatorTransitionInfo(0);
+
+        if (currentState.IsName("Hitted"))
+            return damage;
+
+        if (blocking) // blocking
+        {
+            triggerHandler.SetTrigger("Hitted when Blocking", 0.1f);
+
+            if (Vector3.Dot(damage.attackFrom, transform.right) < 0.0f)
+
+                if (blockingTime < blockingDuration) // perfect blocking
+                {
+                    damage.enable = false; // disable
+                }
+                else // normal blocking
+                {
+                    // todo 
+                }
+        }
+        else // non-blocking
+        {
+            triggerHandler.SetTrigger("Hitted", 0.1f);
+
+            if (animator.IsInTransition(0)) // in transition
+            {
+            }
+            else // in state
+            {
+            }
+        }
+
+        return damage;
     }
 
     // Update is called once per frame
     void Update()
     {
         var currentState = animator.GetCurrentAnimatorStateInfo(0); // get current state in animator
+        var nextState = animator.GetNextAnimatorStateInfo(0); // get current state in animator
         var currentTransition = animator.GetAnimatorTransitionInfo(0); // get current state in animator
 
+        // handle  movement detect
         input = actionMove.ReadValue<Vector2>();
         speedX = Mathf.Abs(input.x);
 
-        // handle
-        if (!currentState.IsTag("Attacking"))
+        awaking = !currentState.IsName("Hitted");
+
+        if (speedX > 0f)
+            if (!awaking)
+            {
+                awaking = true;
+                triggerHandler.SetTrigger("Awake", 0.1f);
+            }
+
+        animator.SetFloat("speedX", speedX, 0.02f, Time.deltaTime); // now horizontal input value
+
+        // handle rotation
+        if ((!currentState.IsTag("Attacking")) // can't rotate when attacking
+         && (!currentState.IsName("Hitted")) // can't rotate when hitted
+        )
             CheckRotation(input.x);
 
-        // handle movement
-        if (!currentState.IsTag("Attacking"))
-            transform.position += transform.right * runningSpeed * speedX * Time.deltaTime;
-        // else
-        //     rb.velocity = Vector3.zero;
+        JumpingHandler(currentState);
+        AttackHandler(currentState);
+        BlockHandler(currentState, nextState);
+
+        // handle dodge
+        if (actionDodge.triggered)
+            triggerHandler.SetTrigger("Dodge", 0.1f);
+
+        animator.SetBool("unstopable", unstopable);
+        animator.SetBool("Can Jump", doubleJump);
+
+        triggerHandler.Update(Time.deltaTime);
+    }
+
+    void ShootTriggerEnable()
+    {
+        Debug.Log("ShootTriggerEnable");
+        shootTriggerEnable = true;
+        shootTriggerOn = false;
+        damage.enable = true;
+        // weapon.SetDamage(damage);
+    }
+
+    void CanDoNext()
+    {
+        Debug.Log("CanDoNext");
+        canDoNext = true;
+        damage.enable = false;
+        // weapon.SetDamage(damage);
+    }
+
+    void DodgeStart()
+    {
+        untouchable = true;
+        obstacle.SetActive(false);
+    }
+
+    void DodgeEnd()
+    {
+        untouchable = false;
+        obstacle.SetActive(true);
+    }
+
+    void JumpCircleHandler()
+    {
+        if (jumpCircle.fade > 0)
+            jumpCircle.fade -= 1.0f * Time.deltaTime;
+        else
+            jumpCircle.fade = 0.0f;
+    }
+
+    void BlockHandler(AnimatorStateInfo currentState, AnimatorStateInfo nextState)
+    {
+        // handle block detect
+        animator.SetBool("blocking", actionBlock.IsPressed());
+
+        if (!animator.IsInTransition(0)) // in state
+            blocking = currentState.IsName("Blocking");
+        else // in transition
+            blocking = nextState.IsName("Blocking");
+
+        if (blocking)
+            blockingTime += Time.deltaTime;
+        else
+            blockingTime = 0.0f;
+    }
+
+    void JumpingHandler(AnimatorStateInfo currentState)
+    {
+        // handle can Jump
+        if (currentState.IsTag("Attacking"))
+            canJump = false;
+        else
+            canJump = true;
 
         // handle jump detect
-        if (actionJump.triggered)
+        if (isGrounded) // reset double jump
+            doubleJump = true;
+
+        if (actionJump.triggered && canJump)
         {
-            if ((!animator.IsInTransition(0) && !(currentState.IsTag("OnAir") || currentState.IsTag("Attacking"))) || currentTransition.IsUserName("Landing"))
+            if (isGrounded)
             {
                 rb.velocity = new Vector2(0, jumpForce);
-                animator.SetTrigger("jump");
-                doubleJump = true;
+                triggerHandler.SetTrigger("Jump", 0.1f);
+                jumpCircle.fade = 1.0f;
             }
-            else if (!isGround && doubleJump)
+            else if (doubleJump)
             {
                 rb.velocity = new Vector2(0, jumpForce);
+                triggerHandler.SetTrigger("Jump", 0.1f);
+                jumpCircle.fade = 1.0f;
                 doubleJump = false;
             }
         }
 
+        JumpCircleHandler();
+
+        // information for animator
+        animator.SetFloat("speedY", rb.velocity.y); // curent vertical speed
+        animator.SetBool("isGrounded", isGrounded);
+    }
+
+    void AttackHandler(AnimatorStateInfo currentState)
+    {
         // handle attack detect
         if (actionAttack.triggered)
         {
-            if (currentState.IsName("Move&Idle"))
+            if (currentState.IsTag("Attacking"))
             {
-                animator.SetTrigger("attack");
-            }
-            else if (currentState.IsName("Jump") || currentState.IsName("Fall"))
-            {
-                animator.SetTrigger("attack");
-                // rb.velocity = Vector3.zero;
-            }
-            else if (currentState.IsTag("Attacking"))
                 if (shootTriggerEnable == true)
                 {
                     shootTriggerOn = true;
                     shootTriggerEnable = false;
                 }
+            }
+            else
+            {
+                triggerHandler.SetTrigger("Attack", 0.1f);
+            }
         }
 
         if (canDoNext)
         {
             if (shootTriggerOn)
             {
-                animator.SetTrigger("attack");
+                triggerHandler.SetTrigger("Attack", 0.1f);
                 canDoNext = false;
                 shootTriggerOn = false;
             }
         }
-
-        // information for animator
-        animator.SetFloat("speedY", rb.velocity.y); // curent vertical speed
-        animator.SetFloat("speedX", speedX, 0.02f, Time.deltaTime); // now horizontal input value
-        animator.SetBool("isGround", isGround); // is ground or not (checked by CheckIsGround function)
-        animator.SetBool("defend", actionDefend.IsPressed()); // is defend or not
     }
-
-    void CheckIsGround()
-    {
-        // check ground
-        RaycastHit2D hit = Physics2D.Raycast(
-            new Vector2(transform.position.x, transform.position.y) + Vector2.up * 0.5f,
-            Vector2.down, 0.7f,
-            groundMask);
-
-        if (hit.collider != null)
-            isGround = true;
-        else
-            isGround = false;
-
-    }
-
-    void ShootTriggerEnable()
-    {
-        shootTriggerEnable = true;
-        shootTriggerOn = false;
-        weapon.attacking = true;
-    }
-
-    void CanDoNext()
-    {
-        canDoNext = true;
-        weapon.attacking = false;
-    }
-
 }

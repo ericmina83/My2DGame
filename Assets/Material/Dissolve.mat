@@ -49,9 +49,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_2756d055cb134ae58627a9aa1a3832de: 30
-    - Vector1_50d4ae35cfb7463f95d3fa1a66585933: 0.1
+    - Vector1_50d4ae35cfb7463f95d3fa1a66585933: 0.3
     - _EnableExternalAlpha: 0
-    - _Fade: 0.479
+    - _Fade: 1.3
     m_Colors:
     - Color_7551613c118943c290f7cfb599f7c189: {r: 21.77809, g: 6.322671, b: 3.3955085, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

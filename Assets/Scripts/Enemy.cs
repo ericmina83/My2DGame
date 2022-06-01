@@ -16,11 +16,18 @@ public class Enemy : Character
     }
 
     MonsterAIState aiState;
+    [SerializeField] private Weapon backWeapon;
+    [SerializeField] private Weapon frontWeapon;
 
-    new void Start()
+
+    override protected void Init()
     {
-        base.Start();
         animator = GetComponent<Animator>();
+    }
+
+    protected override Damage OnHitted(Damage damage)
+    {
+        return damage;
     }
 
     void Update()
@@ -37,7 +44,7 @@ public class Enemy : Character
 
                 if (Mathf.Abs(distanceFromEnemy.x) > 2.0f)
                 {
-                    transform.position += forward * Time.deltaTime;
+                    transform.position += movingSpeed * forward * Time.deltaTime;
                 }
                 else
                 {
@@ -45,5 +52,19 @@ public class Enemy : Character
                 }
             }
         }
+    }
+
+    void AttackingStart()
+    {
+        damage.enable = true;
+        backWeapon.SetDamage(damage);
+        frontWeapon.SetDamage(damage);
+    }
+
+    void AttackingEnd()
+    {
+        damage.enable = false;
+        backWeapon.SetDamage(damage);
+        frontWeapon.SetDamage(damage);
     }
 }
