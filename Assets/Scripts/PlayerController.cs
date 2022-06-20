@@ -19,13 +19,15 @@ public class PlayerController : Character
     InputAction actionAttack;
     InputAction actionDodge;
     TriggerHandler triggerHandler;
-    public GameObject obstacle;
 
     [SerializeField] private List<Weapon> weapon; // weapon's gameobject
     [SerializeField] private float jumpForce = 7.0f; // decide how height when jumping
     [SerializeField] private float blockingDuration = 0.2f;
-    public MagicCircle jumpCircle;
+
+    public GameObject obstacle;
+    public JumpCircle jumpCircle;
     public Transform weaponPoint;
+    public Transform jumpPoint;
 
     // Start is called before the first frame update
     override protected void Init()
@@ -124,7 +126,7 @@ public class PlayerController : Character
         )
             CheckRotation(input.x);
 
-        JumpingHandler(currentState);
+        JumpHandler(currentState);
         AttackHandler(currentState);
         BlockHandler(currentState, nextState);
 
@@ -138,6 +140,7 @@ public class PlayerController : Character
         triggerHandler.Update(Time.deltaTime);
     }
 
+    #region Animation Events
     void ShootTriggerEnable()
     {
         Debug.Log("ShootTriggerEnable");
@@ -167,13 +170,9 @@ public class PlayerController : Character
         obstacle.SetActive(true);
     }
 
-    void JumpCircleHandler()
-    {
-        if (jumpCircle.fade > 0)
-            jumpCircle.fade -= 1.0f * Time.deltaTime;
-        else
-            jumpCircle.fade = 0.0f;
-    }
+    #endregion
+
+    #region Action Handler
 
     void BlockHandler(AnimatorStateInfo currentState, AnimatorStateInfo nextState)
     {
@@ -191,7 +190,7 @@ public class PlayerController : Character
             blockingTime = 0.0f;
     }
 
-    void JumpingHandler(AnimatorStateInfo currentState)
+    void JumpHandler(AnimatorStateInfo currentState)
     {
         // handle can Jump
         if (currentState.IsTag("Attacking"))
@@ -209,18 +208,17 @@ public class PlayerController : Character
             {
                 rb.velocity = new Vector2(0, jumpForce);
                 triggerHandler.SetTrigger("Jump", 0.1f);
-                jumpCircle.fade = 1.0f;
+                Instantiate(jumpCircle, jumpPoint.position, jumpPoint.rotation);
             }
             else if (doubleJump)
             {
                 rb.velocity = new Vector2(0, jumpForce);
                 triggerHandler.SetTrigger("Jump", 0.1f);
-                jumpCircle.fade = 1.0f;
                 doubleJump = false;
+                Instantiate(jumpCircle, jumpPoint.position, jumpPoint.rotation);
             }
         }
 
-        JumpCircleHandler();
 
         // information for animator
         animator.SetFloat("speedY", rb.velocity.y); // curent vertical speed
@@ -256,4 +254,6 @@ public class PlayerController : Character
             }
         }
     }
+
+    #endregion
 }
