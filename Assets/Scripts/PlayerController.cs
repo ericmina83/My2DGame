@@ -48,10 +48,7 @@ public class PlayerController : Character
 
     Vector2 input;
     float speedX;
-
     bool canDoNext = false;
-    bool shootTriggerEnable = false;
-    bool shootTriggerOn = false;
     bool doubleJump = true;
     public bool blocking = false;
     public bool awaking = false;
@@ -141,21 +138,27 @@ public class PlayerController : Character
     }
 
     #region Animation Events
-    void ShootTriggerEnable()
-    {
-        Debug.Log("ShootTriggerEnable");
-        shootTriggerEnable = true;
-        shootTriggerOn = false;
-        damage.enable = true;
-        // weapon.SetDamage(damage);
-    }
+    // void ShootTriggerEnable()
+    // {
+    //     Debug.Log("ShootTriggerEnable");
+    //     shootTriggerEnable = true;
+    //     shootTriggerOn = false;
+    //     damage.enable = true;
+    //     // weapon.SetDamage(damage);
+    // }
 
     void CanDoNext()
     {
-        Debug.Log("CanDoNext");
-        canDoNext = true;
-        damage.enable = false;
+        // Debug.Log("CanDoNext");
+        // canDoNext = true;
+        // damage.enable = false;
         // weapon.SetDamage(damage);
+        canDoNext = true;
+    }
+
+    public void CanDoNextEnd()
+    {
+        canDoNext = false;
     }
 
     void DodgeStart()
@@ -219,7 +222,6 @@ public class PlayerController : Character
             }
         }
 
-
         // information for animator
         animator.SetFloat("speedY", rb.velocity.y); // curent vertical speed
         animator.SetBool("isGrounded", isGrounded);
@@ -227,32 +229,45 @@ public class PlayerController : Character
 
     void AttackHandler(AnimatorStateInfo currentState)
     {
-        // handle attack detect
-        if (actionAttack.triggered)
+        animator.SetBool("Can Do Next", canDoNext);
+        if (!animator.IsInTransition(0))
         {
-            if (currentState.IsTag("Attacking"))
+            if (currentState.IsName("Move&Idle"))
             {
-                if (shootTriggerEnable == true)
-                {
-                    shootTriggerOn = true;
-                    shootTriggerEnable = false;
-                }
-            }
-            else
-            {
-                triggerHandler.SetTrigger("Attack", 0.1f);
+                canDoNext = true;
             }
         }
 
-        if (canDoNext)
-        {
-            if (shootTriggerOn)
-            {
-                triggerHandler.SetTrigger("Attack", 0.1f);
-                canDoNext = false;
-                shootTriggerOn = false;
-            }
-        }
+        if (actionAttack.triggered)
+            animator.SetTrigger("Attack");
+        // triggerHandler.SetTrigger("Attack", 0.4f);
+
+        // // handle attack detect
+        // if (actionAttack.triggered)
+        // {
+        //     if (shootTriggerEnable == true)
+        //     {
+        //         shootTriggerOn = true;
+        //         shootTriggerEnable = false;
+        //     }
+        //     // if (currentState.IsTag("Attacking"))
+        //     // {
+        //     // }
+        //     // else
+        //     // {
+        //     //     triggerHandler.SetTrigger("Attack", 0.1f);
+        //     // }
+        // }
+
+        // if (canDoNext)
+        // {
+        //     if (shootTriggerOn)
+        //     {
+        //         triggerHandler.SetTrigger("Attack", 0.1f);
+        //         canDoNext = false;
+        //         shootTriggerOn = false;
+        //     }
+        // }
     }
 
     #endregion

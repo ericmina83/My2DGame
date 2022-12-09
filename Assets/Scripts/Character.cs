@@ -1,16 +1,25 @@
-
 using UnityEngine;
+using System.Collections.Generic;
 
 public abstract class Character : MonoBehaviour
 {
+    public enum State
+    {
+        IDLING,
+        ATTACKING,
+        HITTED,
+        JUMPING,
+        FALLING,
+    }
+
     public enum Team
     {
         ALLY,
         ENEMY,
     }
 
-    int hp;
-    int mp;
+    public int hp;
+    public int mp;
 
     public bool isGrounded;
 
@@ -18,8 +27,12 @@ public abstract class Character : MonoBehaviour
 
     private const float INPUT_DIR_CHANGED_THRES = 0.12f;
     [SerializeField] protected bool facingRight = true;
+    [SerializeField] protected Body[] bodies = null;
+
     protected Damage damage;
     public bool untouchable; // can't touch, will close body collider
+
+    public State state;
 
     protected Vector3 forward
     {
@@ -35,16 +48,17 @@ public abstract class Character : MonoBehaviour
     protected abstract void Init();
     public float speedY;
 
-    void Start()
+    public virtual void Start()
     {
         flip = !facingRight;
         damage = new Damage(this);
 
-        // handle each body part
-        Body[] bodys = GetComponentsInChildren<Body>();
+        bodies = GetComponentsInChildren<Body>();
 
-        foreach (var body in bodys)
+        // handle each body part
+        foreach (var body in bodies)
             body.SetOwner(this);
+
 
         Init();
     }
@@ -52,6 +66,11 @@ public abstract class Character : MonoBehaviour
     void FixedUpdate()
     {
         CheckIsGrounded();
+    }
+
+    void Update()
+    {
+
     }
 
     void CheckIsGrounded()
@@ -111,4 +130,8 @@ public abstract class Character : MonoBehaviour
             facingRight = !facingRight;
         }
     }
+
+    #region state JUMPING
+
+    #endregion
 }

@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class Damage
 {
+    
     public bool enable; // damage effect or not
     public int damageAmount;
     public Vector3 attackFrom;
