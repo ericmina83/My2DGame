@@ -56,7 +56,15 @@ namespace EricGames.Core.Characters
             }
         }
 
-        public override void HandleAttack()
+        public override void HandleAttacking()
+        {
+        }
+
+        public override void HandlePreparing()
+        {
+        }
+
+        public override void HandleRestoring()
         {
         }
 

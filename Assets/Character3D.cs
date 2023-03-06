@@ -29,7 +29,17 @@ public class Character3D : Character
         return Quaternion.Lerp(transform.rotation, lookAtTarget, rotationSpeed * Time.deltaTime);
     }
 
-    public override void HandleAttack()
+    public override void HandleAttacking()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void HandlePreparing()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void HandleRestoring()
     {
         throw new System.NotImplementedException();
     }
