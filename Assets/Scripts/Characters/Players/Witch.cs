@@ -1,33 +1,37 @@
-    using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using EricGames.Core.Characters;
 using EricGames.Core.Mechanics;
+using static UnityEngine.InputSystem.InputAction;
 
 namespace My2DGame.Characters.Players
 {
+    [RequireComponent(typeof(Character))]
     public class Witch : MonoBehaviour
     {
-        PlayerInput playerInput;
-
+        private PlayerInput playerInput;
         // Input Ations
-        InputAction actionMove;
-        InputAction actionRun;
-        InputAction actionJump;
-        InputAction actionBlock;
-        InputAction actionAttack;
-        InputAction actionDodge;
+        private InputAction actionMove;
+        private InputAction actionRun;
+        private InputAction actionJump;
+        private InputAction actionBlock;
+        private InputAction actionAttack;
+        private InputAction actionDodge;
         public JumpCircle jumpCircle;
         public Transform weaponPoint;
         public Transform jumpPoint;
 
         private Character character;
 
-        // Start is called before the first frame update
-        void Start()
+        private void Awake()
         {
             playerInput = GetComponent<PlayerInput>();
             character = GetComponent<Character>();
+        }
 
+        // Start is called before the first frame update
+        private void Start()
+        {
             character.OnHitted += this.OnHitted;
 
             actionMove = playerInput.actions["Move"];
@@ -35,7 +39,7 @@ namespace My2DGame.Characters.Players
             actionRun = playerInput.actions["Run"];
 
             actionJump = playerInput.actions["Jump"];
-            actionJump.started += this.Jump;
+            actionJump.performed += this.Jump;
 
             actionBlock = playerInput.actions["Defend"];
             actionBlock.started += this.HandleBlocking;
@@ -46,6 +50,8 @@ namespace My2DGame.Characters.Players
 
             actionDodge = playerInput.actions["Dodge"];
             actionDodge.started += this.Dodge;
+
+            this.character.OnJump += this.OnJumpEvent;
         }
 
         Damage OnHitted(Damage damage)
@@ -63,7 +69,7 @@ namespace My2DGame.Characters.Players
             character.Move(actionMove.ReadValue<Vector2>());
         }
 
-        public void HandleBlocking(InputAction.CallbackContext callbackContext)
+        public void HandleBlocking(CallbackContext callbackContext)
         {
             if (callbackContext.started)
                 character.Block(true);
@@ -71,20 +77,28 @@ namespace My2DGame.Characters.Players
                 character.Block(false);
         }
 
-        public void Attack(InputAction.CallbackContext callbackContext)
+        private void OnMove()
+        {
+
+        }
+
+        public void Attack(CallbackContext callbackContext)
         {
             character.Attack();
         }
 
-        public void Dodge(InputAction.CallbackContext callbackContext)
+        public void Dodge(CallbackContext callbackContext)
         {
             character.Dodge();
         }
 
-
-        public void OnJump()
+        private void OnJumpEvent()
         {
             Instantiate(jumpCircle, jumpPoint.position, jumpPoint.rotation);
+        }
+
+        public void OnAttack()
+        {
         }
     }
 }

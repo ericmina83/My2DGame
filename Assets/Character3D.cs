@@ -29,17 +29,17 @@ public class Character3D : Character
         return Quaternion.Lerp(transform.rotation, lookAtTarget, rotationSpeed * Time.deltaTime);
     }
 
-    public override void HandleAttacking()
+    protected override void HandleAttacking()
     {
         throw new System.NotImplementedException();
     }
 
-    public override void HandlePreparing()
+    protected override void HandlePreparing()
     {
         throw new System.NotImplementedException();
     }
 
-    public override void HandleRestoring()
+    protected override void HandleResetting()
     {
         throw new System.NotImplementedException();
     }
@@ -70,6 +70,16 @@ public class Character3D : Character
     }
 
     protected override void OnUpdate()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void OnAwake()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void OnStart()
     {
         throw new System.NotImplementedException();
     }

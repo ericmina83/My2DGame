@@ -37,15 +37,6 @@ namespace EricGames.Core.Characters
             return Quaternion.Euler(0, angle, 0);
         }
 
-        public override void Start()
-        {
-            base.Start();
-
-            flip = !facingRight;
-
-            rigidbody2D = GetComponent<Rigidbody2D>();
-        }
-
         public override void HandleMove(Vector2 input)
         {
             if (!animator.applyRootMotion)
@@ -56,21 +47,20 @@ namespace EricGames.Core.Characters
             }
         }
 
-        public override void HandleAttacking()
+        protected override void HandleAttacking()
         {
         }
 
-        public override void HandlePreparing()
+        protected override void HandlePreparing()
         {
         }
 
-        public override void HandleRestoring()
+        protected override void HandleResetting()
         {
         }
 
         protected override void HandleFall(Vector2 moveInput, Vector3 lookInput)
         {
-
         }
 
         protected override void HandleApplyJumpForce(float jumpForce)
@@ -99,9 +89,16 @@ namespace EricGames.Core.Characters
 
         protected override void OnUpdate()
         {
-            animator.SetBool("isGrounded", landingState == LandingState.GROUNDED);
-            animator.SetBool("unstopable", unstopable);
-            animator.SetBool("Can Jump", doubleJump);
+        }
+
+        protected override void OnAwake()
+        {
+        }
+
+        protected override void OnStart()
+        {
+            flip = !facingRight;
+            rigidbody2D = GetComponent<Rigidbody2D>();
         }
     }
 }
