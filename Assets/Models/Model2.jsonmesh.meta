@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 6f8c61daab88cd44490ca57c1f1226d1
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 07def7a4ccecdc042b65bbc4513bb3a5, type: 3}
+  color: {r: 0.8862745, g: 0.7978889, b: 0.07058821, a: 0}
+  uniformScale: 1
