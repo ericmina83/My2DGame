@@ -1,13 +1,12 @@
 {
   "dependencies": {
     "com.ericgames.core": {
-      "version": "https://github.com/ericmina83/com.ericgames.core.git",
+      "version": "file:com.ericgames.core",
       "depth": 0,
-      "source": "git",
+      "source": "embedded",
       "dependencies": {
         "com.github.siccity.xnode": "https://github.com/Siccity/xNode.git"
-      },
-      "hash": "4f5742031caec70b9c04c1e5fa4dd2284da99fac"
+      }
     },
     "com.github.siccity.xnode": {
       "version": "https://github.com/Siccity/xNode.git",

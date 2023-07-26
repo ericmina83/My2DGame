@@ -32,8 +32,6 @@ namespace My2DGame.Characters.Players
         // Start is called before the first frame update
         private void Start()
         {
-            character.OnHitted += this.OnHitted;
-
             actionMove = playerInput.actions["Move"];
 
             actionRun = playerInput.actions["Run"];
@@ -52,11 +50,6 @@ namespace My2DGame.Characters.Players
             actionDodge.started += this.Dodge;
 
             this.character.OnJump += this.OnJumpEvent;
-        }
-
-        Damage OnHitted(Damage damage)
-        {
-            return damage;
         }
 
         public void Jump(InputAction.CallbackContext callbackContext)
