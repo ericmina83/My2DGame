@@ -1,6 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using EricGames.Core.Characters;
+using EricGames.Runtime.Characters;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -11,9 +9,14 @@ public class Character3D : Character
     [SerializeField]
     private float rotationSpeed;
 
-    protected override float speedY => characterController.velocity.y;
+    protected override float SpeedY => characterController.velocity.y;
 
-    public override Quaternion CheckRotation(Vector2 input)
+    protected override void OnAwake()
+    {
+        characterController = GetComponent<CharacterController>();
+    }
+
+    public override Quaternion CheckRotation(Quaternion currentRotation, Vector2 input)
     {
         Vector3 dir;
 
@@ -70,11 +73,6 @@ public class Character3D : Character
     }
 
     protected override void OnUpdate()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    protected override void OnAwake()
     {
         throw new System.NotImplementedException();
     }

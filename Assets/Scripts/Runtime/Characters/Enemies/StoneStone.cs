@@ -1,6 +1,6 @@
 using UnityEngine;
-using EricGames.Core.Equipment;
-using EricGames.Core.Characters;
+using EricGames.Runtime.Equipment;
+using EricGames.Runtime.Characters;
 
 namespace My2DGame.Characters.Enemies
 {

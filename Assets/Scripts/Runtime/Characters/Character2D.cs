@@ -1,21 +1,24 @@
-using System;
 using UnityEngine;
+using EricGames.Runtime.Characters;
 
-namespace EricGames.Core.Characters
+namespace My2DGame.Characters
 {
     [RequireComponent(typeof(Rigidbody2D))]
     public class Character2D : Character
     {
         private new Rigidbody2D rigidbody2D;
-        protected override float speedY => rigidbody2D.velocity.y;
+        protected override float SpeedY => rigidbody2D.velocity.y;
 
-        private const float INPUT_DIR_CHANGED_THRES = 0.12f;
+        private const float INPUT_DIR_CHANGED_THRESHOLD = 0.12f;
+
         [SerializeField] private bool facingRight = true;
-        private bool flip;
 
         // check current rotation is same as input
-        public override Quaternion CheckRotation(Vector2 input)
+        public override Quaternion CheckRotation(Quaternion currentRotation, Vector2 input)
         {
+            if (Mathf.Abs(input.x) < INPUT_DIR_CHANGED_THRESHOLD)
+                return currentRotation;
+
             var angle = 0.0f;
 
             if (input.x < 0)
@@ -27,12 +30,6 @@ namespace EricGames.Core.Characters
             {
                 angle += 180.0f;
             }
-            // if ((movingX > INPUT_DIR_CHANGED_THRES && facingRight == false) || // looking right but wanna look left
-            //     (movingX < -INPUT_DIR_CHANGED_THRES && facingRight == true)) // looking left but wanna look right
-            // {
-            //     transform.Rotate(Vector3.up * 180.0f);
-            //     facingRight = !facingRight;
-            // }
 
             return Quaternion.Euler(0, angle, 0);
         }
@@ -75,7 +72,7 @@ namespace EricGames.Core.Characters
         protected override bool CheckIsGrounded()
         {
             // check ground
-            RaycastHit2D hit = Physics2D.Raycast(
+            var hit = Physics2D.Raycast(
                 new Vector2(transform.position.x, transform.position.y) + Vector2.up * 0.5f,
                 Vector2.down, 0.7f,
                 groundMask);
@@ -97,7 +94,6 @@ namespace EricGames.Core.Characters
 
         protected override void OnStart()
         {
-            flip = !facingRight;
             rigidbody2D = GetComponent<Rigidbody2D>();
         }
     }

@@ -97,5 +97,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b8718a1e213c74408e08587fe274d06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shieldAlpha: 1
+  timeToShow: 0.5
+  timeToHide: 0.5
   color: {r: 0, g: 0, b: 0, a: 0}

@@ -1,4 +1,4 @@
-using EricGames.Core.Equipment;
+using EricGames.Runtime.Equipment;
 using UnityEngine;
 
 namespace My2DGame.Equipment.Weapons

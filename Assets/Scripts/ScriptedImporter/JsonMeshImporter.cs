@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor.AssetImporters;
 using System.IO;
 using System;
-using EricGames.Core.Triangulations;
+using EricGames.Runtime.Triangulations;
 
 [ScriptedImporter(1, "jsonmesh")]
 public class JsonMeshImporter : ScriptedImporter

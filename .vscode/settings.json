@@ -53,5 +53,11 @@
         "temp/":true,
         "Temp/":true
     },
-    "perforce.password": "NcFNnQLY74ThYrCs"
+    "dotnet.defaultSolution": "My2DGame.sln",
+    "cSpell.words": [
+        "Behaviour",
+        "Mathf",
+        "Raycast",
+        "Rigidbody"
+    ]
 }

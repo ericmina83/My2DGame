@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Skill1
   m_EditorClassIdentifier: 
   hitBoxCenter: {x: 3.5, y: 1.5}
-  hitBoxSize: {x: 0, y: 4}
+  hitBoxSize: {x: 4, y: 4}
   hitBoxAngle: 0
   frames: 0
   owner: {fileID: 0}
