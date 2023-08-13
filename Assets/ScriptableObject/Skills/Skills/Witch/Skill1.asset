@@ -13,10 +13,13 @@ MonoBehaviour:
   m_Name: Skill1
   m_EditorClassIdentifier: 
   hitBoxCenter: {x: 3.5, y: 1.5}
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
   hitBoxSize: {x: 4, y: 4}
   hitBoxAngle: 0
   frames: 0
   owner: {fileID: 0}
   enable: 0
-  damageAmount: 0
+  damage: 25
   attackFrom: {x: 0, y: 0, z: 0}

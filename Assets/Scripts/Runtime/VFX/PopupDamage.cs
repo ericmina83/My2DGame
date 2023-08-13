@@ -3,19 +3,10 @@ using TMPro;
 
 public class PopupDamage : MonoBehaviour
 {
-    int damage;
-    float disappearTimer = 1.0f;
+    private int damage;
+    private float disappearTimer = 1.0f;
     private TextMeshPro textMesh;
     private Color textColor;
-
-    public static PopupDamage Create(Vector2 position, int damageAmount)
-    {
-        var popupDamageTransform = Instantiate(GameAssets.instance.popupDamage, position, Quaternion.identity);
-        var popupDamage = popupDamageTransform.GetComponent<PopupDamage>();
-
-        popupDamage.Setup(damageAmount);
-        return popupDamage;
-    }
 
     void Awake()
     {
@@ -23,9 +14,10 @@ public class PopupDamage : MonoBehaviour
         textColor = textMesh.color;
     }
 
-    void Setup(int damageAmount)
+    public void Setup(int damageAmount, Vector3 position)
     {
-        this.damage = damageAmount;
+        transform.position = position;
+        damage = damageAmount;
         textMesh.SetText(damageAmount.ToString());
         disappearTimer = 1f;
     }
@@ -34,7 +26,7 @@ public class PopupDamage : MonoBehaviour
     void Update()
     {
         float moveYSpeed = 1.0f;
-        transform.position += Vector3.up * moveYSpeed * Time.deltaTime;
+        transform.position += moveYSpeed * Time.deltaTime * Vector3.up;
 
         if (disappearTimer < 0)
         {

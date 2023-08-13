@@ -56,8 +56,10 @@
     "dotnet.defaultSolution": "My2DGame.sln",
     "cSpell.words": [
         "Behaviour",
+        "Cysharp",
         "Mathf",
         "Raycast",
-        "Rigidbody"
+        "Rigidbody",
+        "Scriptable"
     ]
 }
